@@ -1,6 +1,5 @@
-from typing import Dict, List, Any, Optional
-from fastapi import FastAPI, HTTPException, status, Path
-from models import Curso, cursos
+from fastapi import FastAPI
+from routes import curso_router
 
 app = FastAPI(
     title="Cursos API",
@@ -10,59 +9,7 @@ app = FastAPI(
 )
 
 
-@app.get(
-    "/cursos",
-    status_code=status.HTTP_200_OK,
-    description="Retorna uma lista de cursos",
-    summary="Lista os cursos",
-    response_model=Dict[str, List[Curso]],
-    response_description="Lista de cursos encontrados",
-)
-async def get_cursos():
-    return {"cursos": cursos}
-
-
-@app.get("/cursos/{id}", status_code=status.HTTP_200_OK)
-async def get_curso(id: int = Path(default=None, title="ID do curso", description="Range de 1 a 3", gt=0, lt=4)):
-    try:
-        curso = cursos[id]
-        return curso
-    except KeyError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Curso não encontrado")
-
-
-@app.post("/cursos", status_code=status.HTTP_201_CREATED, response_model=Dict[str, Curso])
-async def post_curso(curso: Curso):
-    next_id: int = len(cursos) + 1
-
-    if next_id in cursos:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Curso já existe")
-
-    curso.id = next_id
-    cursos.append(curso.dict())
-    return {"curso": curso}
-
-
-@app.put("/cursos/{id}", status_code=status.HTTP_200_OK, response_model=Dict[str, Curso])
-async def put_curso(id: int, curso: Curso):
-
-    for i in range(len(cursos)):
-        c = dict(cursos[i])
-
-        if c.get("id") == id:
-            curso.id = id
-            cursos[i] = curso.dict()
-            return {"curso": curso}
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Curso não encontrado")
-
-
-@app.delete("/cursos/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_curso(id: int):
-    if id not in cursos:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Curso não encontrado")
-
-    del cursos[id]
+app.include_router(curso_router.router, tags=["cursos"], prefix="/api/v1")
 
 
 # Entry point of the application
