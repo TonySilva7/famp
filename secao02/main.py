@@ -10,7 +10,7 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_STR}/redoc",
     redoc_config={
         "spec_url": f"{settings.API_V1_STR}/openapi.json",
-        "expand_all": True,
+        "expand_all": False,
         "theme": "dark",
     },
 )

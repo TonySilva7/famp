@@ -7,7 +7,7 @@ async def get_session() -> Generator:
     """
     Obtém uma nova seção com banco de dados.
     """
-    session: AsyncSession = Session()
+    session: AsyncSession = Session
     try:
         yield session
     except Exception:
@@ -15,5 +15,3 @@ async def get_session() -> Generator:
         raise
     finally:
         await session.close()
-
-    return session

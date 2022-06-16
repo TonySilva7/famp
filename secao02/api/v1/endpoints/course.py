@@ -52,9 +52,11 @@ async def get_courses(db: AsyncSession = Depends(get_session)):
 async def get_course(id: int, db: AsyncSession = Depends(get_session)):
     try:
         async with db as session:
+            # query = select(CourseModel).where(CourseModel.id == id)
             query = select(CourseModel).filter(CourseModel.id == id)
             result = await session.execute(query)
-            course: CourseModel = result.scalars_one_or_none()
+            # course: CourseModel = result.scalars().first()
+            course: CourseModel = result.scalar_one_or_none()
 
             if course is None:
                 raise HTTPException(
@@ -74,7 +76,7 @@ async def update_course(id: int, course: CourseSchema, db: AsyncSession = Depend
         async with db as session:
             query = select(CourseModel).filter(CourseModel.id == id)
             result = await session.execute(query)
-            course_old: CourseModel = result.scalars_one_or_none()
+            course_old: CourseModel = result.scalar_one_or_none()
 
             if course_old is None:
                 raise HTTPException(
@@ -100,7 +102,7 @@ async def delete_course(id: int, db: AsyncSession = Depends(get_session)):
         async with db as session:
             query = select(CourseModel).filter(CourseModel.id == id)
             result = await session.execute(query)
-            course: CourseModel = result.scalars_one_or_none()
+            course: CourseModel = result.scalar_one_or_none()
 
             if course is None:
                 raise HTTPException(
