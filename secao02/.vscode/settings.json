@@ -6,4 +6,5 @@
     "100"
   ],
   "python.linting.enabled": true,
+  "editor.tabSize": 4,
 }
