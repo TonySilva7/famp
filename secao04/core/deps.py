@@ -50,7 +50,7 @@ async def get_current_user(
             algorithms=[settings.ALGORITHM],
             options={"verify_aud": False},
         )
-        username: str = payload.get("sub")
+        username: str = payload.get("sub")  # 'sub' é o id do usuário
 
         if username is None:
             raise credential_exeption
