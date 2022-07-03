@@ -2,16 +2,16 @@ version: "3.9"
 
 services:
   course_api:
-    container_name: course_api-sc3
-    hostname: course_api-sc3
+    container_name: course_api-sc4
+    hostname: course_api-sc4
     image: postgres
     restart: always
     environment:
       POSTGRES_USER: tony
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB: university2
+      POSTGRES_DB: university4
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ~/dbs/course_api_2:/var/lib/postgresql/data/pgdata
+      - ~/dbs/course_api_4:/var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432

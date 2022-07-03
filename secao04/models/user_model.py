@@ -4,7 +4,7 @@ from core.configs import settings
 
 
 class UserModel(settings.DBBaseModel):
-    _tablename_ = "users"
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(256), nullable=True)
     last_name = Column(String(256), nullable=True)
@@ -13,7 +13,7 @@ class UserModel(settings.DBBaseModel):
     is_admin = Column(Boolean, default=False)
     articles = relationship(
         "ArticleModel",
-        casdade="all, delete-orphan",
+        cascade="all, delete-orphan",
         back_populates="creator",
         uselist=True,
         lazy="joined",
