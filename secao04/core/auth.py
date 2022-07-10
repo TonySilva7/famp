@@ -17,6 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/users/login",
 )
 
+
 async def authenticate_user(email: EmailStr, password: str, db: AsyncSession) -> Optional[UserModel]:
     async with db as session:
         query = select([UserModel]).filter(UserModel.email == email)
@@ -31,6 +32,7 @@ async def authenticate_user(email: EmailStr, password: str, db: AsyncSession) ->
 
         return user
 
+
 def _create_token(type_token: str, ttl: timedelta, subject: str) -> str:
     # Saiba mais sobre o padrão de payload em: http://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3
     payload = {}
@@ -40,10 +42,11 @@ def _create_token(type_token: str, ttl: timedelta, subject: str) -> str:
 
     payload["type"] = type_token
     payload["exp"] = expires
-    payload["iat"] = datetime.now(tz=sp) # Issued at time | Gerado em data e hora atual
+    payload["iat"] = datetime.now(tz=sp)  # Issued at time | Gerado em data e hora atual
     payload["sub"] = str(subject)
 
     return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.ALGORITHM).decode("utf-8")
+
 
 def create_access_token(sub: str) -> str:
     return _create_token(

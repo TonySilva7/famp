@@ -3,7 +3,7 @@
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": [
     "--line-length",
-    "100"
+    "120"
   ],
   "python.linting.enabled": true,
   "editor.tabSize": 4,

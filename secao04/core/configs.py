@@ -5,6 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
+    API_DOCS_STR: str = "/api/v1/docs"
+    API_REDOC_STR: str = "/api/v1/redoc"
+    API_TITLE: str = "FastAPI"
+    API_DESCRIPTION: str = "FastAPI is a blazing fast, simple, and flexible Python web framework."
+    API_VERSION: str = "0.1.0"
+
     DB_URL: str = "postgresql+asyncpg://tony:123@localhost:5432/university4"
     DBBaseModel: declarative_base = declarative_base()
 
