@@ -3,11 +3,11 @@ from pydantic import BaseModel, HttpUrl
 
 
 class ArticleSchema(BaseModel):
-    id = Optional[int] = None
-    title = str
-    description = str
-    url_font = HttpUrl
-    user_id = Optional[int]
+    id: Optional[int] = None
+    title: str
+    description: str
+    url_font: HttpUrl
+    user_id: Optional[int]
 
     class Config:
         orm_mode = True

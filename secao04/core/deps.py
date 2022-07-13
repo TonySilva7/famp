@@ -30,7 +30,6 @@ async def get_session() -> Generator:
     finally:
         session.close()
         print("Session closed")
-        yield None
 
 
 async def get_current_user(

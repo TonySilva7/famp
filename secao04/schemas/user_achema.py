@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, BaseModelEncoder, HttpUrl
+from pydantic import BaseModel, EmailStr, HttpUrl
 from schemas.article_schema import ArticleSchema
 
 
@@ -33,8 +33,8 @@ class UserSchemaArticles(UserSchemaBase):
 
 
 class UserSchemaUpdate(UserSchemaBase):
-    name = Optional[str]
-    last_name = Optional[str]
-    email = Optional[str]
-    password = Optional[str]
-    is_admin = Optional[bool]
+    name: Optional[str]
+    last_name: Optional[str]
+    email: Optional[str]
+    password: Optional[str]
+    is_admin: Optional[bool]

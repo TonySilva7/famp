@@ -23,21 +23,23 @@ def get_logged_user(user_logged: UserModel = Depends(get_current_user)):
 # POST / Sign up
 @router.post("/signup", response_model=UserSchemaBase, status_code=status.HTTP_201_CREATED)
 async def signup(user: UserSchemaCreate, db: AsyncSession = Depends(get_session)):
-    try:
-        new_user = UserModel(
-            name=user.name,
-            last_name=user.last_name,
-            email=user.email,
-            password=generate_password_hash(user.password),
-            is_admin=user.is_admin,
-        )
 
-        async with db as session:
-            await session.add(new_user)
+    async with db as session:
+        try:
+            new_user = UserModel(
+                name=user.name,
+                last_name=user.last_name,
+                email=user.email,
+                password=generate_password_hash(user.password),
+                is_admin=user.is_admin,
+            )
+
+            session.add(new_user)
             await session.commit()
             return new_user
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
+        except Exception as e:
+            print("MEU_ERRO: ", e)
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
 
 
 # get all users
