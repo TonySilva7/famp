@@ -2,6 +2,7 @@ from typing import List, Optional, Any
 from fastapi import APIRouter, HTTPException, Depends, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -37,23 +38,23 @@ async def signup(user: UserSchemaCreate, db: AsyncSession = Depends(get_session)
             session.add(new_user)
             await session.commit()
             return new_user
-        except Exception as e:
-            print("MEU_ERRO: ", e)
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="An user with this email already exists"
+            )
 
 
 # get all users
 @router.get("/", response_model=List[UserSchemaBase])
 async def get_users(db: AsyncSession = Depends(get_session)):
-    try:
-        async with db as session:
-            query = select(UserModel)
+    async with db as session:
+        try:
+            query = select(UserModel).order_by(UserModel.id)
             result = await session.execute(query)
             users: List[UserSchemaBase] = result.scalars().unique().all()
             return users
-
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
 
 
 # get user by id
@@ -61,14 +62,17 @@ async def get_users(db: AsyncSession = Depends(get_session)):
 async def get_user(user_id: int, db: AsyncSession = Depends(get_session)):
 
     async with db as session:
-        query = select(UserModel).filter(UserModel.id == user_id)
-        result = await session.execute(query)
-        user: UserSchemaArticles = result.scalars().unique().one_or_none()
+        try:
+            query = select(UserModel).filter(UserModel.id == user_id)
+            result = await session.execute(query)
+            user: UserSchemaArticles = result.scalars().unique().one_or_none()
 
-        if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            if user is None:
+                return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "User not found"})
 
-        return user
+            return user
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 # update user
@@ -86,7 +90,7 @@ async def update_user(user_id: int, user: UserSchemaUpdate, db: AsyncSession = D
         user_db.name = user.name if user.name else user_db.name
         user_db.last_name = user.last_name if user.last_name else user_db.last_name
         user_db.email = user.email if user.email else user_db.email
-        user_db.password = user.password if generate_password_hash(user.password) else user_db.password
+        user_db.password = generate_password_hash(user.password) if user.password else user_db.password
         user_db.is_admin = user.is_admin if user.is_admin else user_db.is_admin
 
         await session.commit()
@@ -107,7 +111,7 @@ async def delete_user(user_id: int, db: AsyncSession = Depends(get_session)):
         await session.delete(user_db)
         await session.commit()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 # login - POST

@@ -20,7 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 async def authenticate_user(email: EmailStr, password: str, db: AsyncSession) -> Optional[UserModel]:
     async with db as session:
-        query = select([UserModel]).filter(UserModel.email == email)
+        query = select(UserModel).filter(UserModel.email == email)
         result = await session.execute(query)
         user: UserModel = result.scalars().unique().one_or_none()
 
@@ -45,12 +45,14 @@ def _create_token(type_token: str, ttl: timedelta, subject: str) -> str:
     payload["iat"] = datetime.now(tz=sp)  # Issued at time | Gerado em data e hora atual
     payload["sub"] = str(subject)
 
-    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.ALGORITHM).decode("utf-8")
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
 
 
 def create_access_token(sub: str) -> str:
-    return _create_token(
+    token = _create_token(
         type_token="access_token",
         ttl=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         subject=sub,
     )
+    print("MY_TOKEN: ", token)
+    return token
