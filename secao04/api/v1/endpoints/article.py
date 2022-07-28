@@ -36,7 +36,7 @@ async def create_article(
 # GET articles (usuário não precisa estar logado)
 @router.get("/", response_model=List[ArticleSchema])
 async def get_articles(db: AsyncSession = Depends(get_session)) -> List[ArticleSchema]:
-    with db as session:
+    async with db as session:
         query = select(ArticleModel)
         result = await session.execute(query)
         articles: List[ArticleModel] = result.scalars().unique().all()
@@ -116,4 +116,4 @@ async def delete_article(
         await session.delete(article_db)
         await session.commit()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
